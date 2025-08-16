@@ -1,27 +1,27 @@
 # Use the official Python image from Docker Hub
-FROM python:3.12-slim-bullseye
+#FROM python:3.12-slim-bullseye
+FROM python:3.12-slim
 
 # Set environment variables
 ENV DB_USERNAME=myuser
 ENV DB_PASSWORD=mypassword
 ENV DB_NAME=mydatabase
+ENV DB_PORT=5433
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
-COPY . . 
+# Copy the current directory contents into the container
+COPY . .
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    python3-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update -y && \
+    apt-get install -y build-essential libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install project dependencies
-RUN python -m ensurepip --upgrade \
-    && python -m pip install --upgrade pip setuptools wheel \
-    && python -m pip install --no-cache-dir -r requirements.txt
+# Upgrade pip and install Python dependencies
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Run the application
 CMD ["python", "app.py"]
