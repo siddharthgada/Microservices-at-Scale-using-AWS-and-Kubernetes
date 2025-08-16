@@ -1,12 +1,10 @@
 # Use the official Python image from Docker Hub
-#FROM python:3.12-slim-bullseye
-FROM python:3.12-slim
+FROM python:3.12-slim-bullseye
 
 # Set environment variables
 ENV DB_USERNAME=myuser
 ENV DB_PASSWORD=mypassword
 ENV DB_NAME=mydatabase
-ENV DB_PORT=5433
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
