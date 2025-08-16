@@ -1,38 +1,29 @@
-FROM python:3.10-slim-buster
+# Use the official Python image from Docker Hub
+FROM python:3.12-slim-bullseye
 
-# Set your app working directory
-WORKDIR /analytics
+# Set environment variables
+ENV DB_USERNAME=myuser
+ENV DB_PASSWORD=mypassword
+ENV DB_NAME=mydatabase
 
-# Install system dependencies for PostgreSQL
-RUN apt update -y && apt install build-essential libpq-dev -y
-RUN pip install --upgrade pip setuptools wheel -y
-RUN pip install -r requirements.txt
+# Set the working directory in the container
+WORKDIR /usr/src/app
 
-# Install Postgres and configure
-USER root
+COPY . . 
 
-ARG DB_USERNAME=$DB_USERNAME
-ARG DB_PASSWORD=$DB_PASSWORD
-ARG DB_HOST=$DB_HOST
-ARG DB_PORT=$DB_PORT
-ARG DB_NAME=$DB_NAME
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-USER postgres
-WORKDIR /db
-COPY ./db .
+# Install project dependencies
+RUN python -m ensurepip --upgrade \
+    && python -m pip install --upgrade pip setuptools wheel \
+    && python -m pip install --no-cache-dir -r requirements.txt
 
-RUN service postgresql start && \
-psql -c "CREATE USER $DB_USERNAME PASSWORD '$DB_PASSWORD'" && \
-psql < 1_create_tables.sql && \
-psql < 2_seed_users.sql && \
-psql < 3_seed_tokens.sql && \
-psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $DB_USERNAME;" && \
-psql -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $DB_USERNAME"
+# Run the application
+CMD ["python", "app.py"]
 
-# -- End database setup
-
-# Expose Flask app port
 EXPOSE 5153
-
-# Start the database and Flask application
-CMD service postgresql start && python app.py
