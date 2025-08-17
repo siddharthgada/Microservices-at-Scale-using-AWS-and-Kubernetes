@@ -46,7 +46,7 @@ spec:
           timeoutSeconds: 5
         envFrom:
         - configMapRef:
-            name: postgresql-service-postgresql
+            name: postgresql-service
         env:
         - name: DB_PASSWORD
           valueFrom:
