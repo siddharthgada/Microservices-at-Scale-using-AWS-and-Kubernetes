@@ -44,7 +44,7 @@ spec:
             port: 5153
           initialDelaySeconds: 5
           timeoutSeconds: 5
-        envFrom:
+        env:
         - configMapRef:
             name: postgresql-service
         env:
