@@ -14,4 +14,4 @@ metadata:
   name: db-credentials
 type: Opaque
 data:
-  DB_PASSWORD: <OUTPUT OF `echo -n 'mypassword' | base64`>
+  DB_PASSWORD: bXlwYXNzd29yZA==
